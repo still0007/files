@@ -1,0 +1,21 @@
+#!/bin/bash
+if [ $# -ge 2 ]; then
+  echo "Usage: servers [-u]"
+  exit
+elif [ $# -eq 1 ]; then
+  if [ "$1" != "-u" ]; then
+    echo "Usage: servers [-u]"
+    exit
+  fi
+fi
+if [ "$1" == "-u" ]; then 
+  curl --silent --max-time 5 https://gist.githubusercontent.com/still0007/c1c50f6005807dd9e2ae/raw/9f3bf0fddd01d968b44334b9a06b9d9247789fbe/sshconfig > ~/.tmp1
+  if [ $? -eq 0 ] ; then
+    cat ~/.tmp1 > ~/.ssh/config
+    echo "~/.ssh/config has been refreshed successfully."
+  else
+    echo "ERROR: Cannot reach to destination for refresing ssh config file."
+  fi
+  rm -f ~/.tmp1
+fi
+awk 'BEGIN{printf("%-30s %-80s\n--------------------------------------------------\n", "SERVER NAME", "ADDRESS");}{if($1 ~ /^Host$/) host = $NF; else if($1 ~ /^HostName$/) { printf("%-30s %-80s\n", host, $NF); host = null; }}' ~/.ssh/config
